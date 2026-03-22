@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 
 import api from "../../api/client";
-import Modal from "../../components/Modal/Modal";
 import DeleteModal from "../../components/Modals/DeleteModal/DeleteModal";
 import CopyLinkModal from "../../components/Modals/CopyLinkModal/CopyLinkModal";
 import ErrorModal from "../../components/Modals/ErrorModal/ErrorModal";
@@ -19,12 +18,13 @@ export default function FilesPage() {
   const [searchParams] = useSearchParams();
 
   const user = useSelector((state) => state.user.user);
+  const files = useSelector((state) => state.files.items);
 
   const targetUserId = searchParams.get("user_id");
 
   const isAdminViewingOtherUser =
     user?.is_staff && targetUserId && String(targetUserId) !== String(user?.id);
-  const files = useSelector((state) => state.files.items);
+
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploadComment, setUploadComment] = useState("");
   const [error, setError] = useState("");
@@ -38,7 +38,6 @@ export default function FilesPage() {
     comment: "",
   });
 
-  // Modal states
   const [deleteModal, setDeleteModal] = useState({
     isOpen: false,
     onConfirm: null,
@@ -74,8 +73,8 @@ export default function FilesPage() {
       const response = await api.get(url);
       dispatch(setFilesAction(response.data));
     } catch (err) {
-      setError("Ошибка загрузки файлов");
       console.error(err);
+      setError("Ошибка загрузки файлов");
     } finally {
       setIsLoading(false);
     }
@@ -115,7 +114,9 @@ export default function FilesPage() {
     } catch (err) {
       console.error(err);
       setUploadError(
-        JSON.stringify(err.response?.data || "Ошибка загрузки файла"),
+        typeof err.response?.data === "string"
+          ? err.response.data
+          : JSON.stringify(err.response?.data || "Ошибка загрузки файла"),
       );
     } finally {
       setIsUploading(false);
@@ -154,8 +155,31 @@ export default function FilesPage() {
     }
   };
 
-  const handleDownload = (id) => {
-    window.open(`http://127.0.0.1:8000/api/files/${id}/download/`, "_blank");
+  const handleDownload = async (id) => {
+    try {
+      const response = await api.get(`/files/${id}/download/`, {
+        responseType: "blob",
+      });
+
+      const blob = new Blob([response.data]);
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+
+      link.href = downloadUrl;
+      link.download = "";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      window.URL.revokeObjectURL(downloadUrl);
+    } catch (err) {
+      console.error(err);
+      setErrorModal({
+        isOpen: true,
+        title: "Ошибка",
+        message: "Ошибка скачивания файла",
+      });
+    }
   };
 
   const handlePublicLink = async (id) => {
@@ -173,8 +197,9 @@ export default function FilesPage() {
         },
       );
 
-      const fullLink = `http://127.0.0.1:8000${response.data.public_url}`;
+      const fullLink = `${window.location.origin}${response.data.public_url}`;
       await navigator.clipboard.writeText(fullLink);
+
       setCopyLinkModal({
         isOpen: true,
         link: fullLink,
@@ -260,12 +285,13 @@ export default function FilesPage() {
     if (file.mime_type) {
       return file.mime_type.startsWith("image/");
     }
+
     const ext = file.original_name.split(".").pop().toLowerCase();
     return ["jpg", "jpeg", "png", "gif", "bmp", "webp"].includes(ext);
   };
 
   const getFileUrl = (id) => {
-    return `http://127.0.0.1:8000/api/files/${id}/download/`;
+    return `/api/files/${id}/download/`;
   };
 
   return (
@@ -383,6 +409,7 @@ export default function FilesPage() {
                         />
                       </div>
                     )}
+
                     <div>
                       <strong>{file.original_name}</strong> —{" "}
                       {formatSize(file.size)}
