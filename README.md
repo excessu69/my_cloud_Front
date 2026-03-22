@@ -1,16 +1,105 @@
-# React + Vite
+# My Cloud Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Клиентская часть приложения **My Cloud** — сервиса для хранения и управления пользовательскими файлами.
 
-Currently, two official plugins are available:
+Фронтенд предоставляет интерфейс для взаимодействия с backend API: авторизация, загрузка и редактирование файлов, удаление, скачивание, создание публичных ссылок и просмотр изображений.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🚀 Функциональные возможности
 
-## React Compiler
+- Регистрация и авторизация пользователя
+- Хранение данных о текущем пользователе (Redux)
+- Загрузка файлов на сервер
+- Просмотр списка файлов
+- Редактирование имени и комментария файла
+- Удаление файлов с подтверждением
+- Скачивание файлов
+- Генерация публичной ссылки
+- Просмотр изображений в модальном окне
+- Обработка ошибок через модальные окна
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🛠️ Стек технологий
 
-## Expanding the ESLint configuration
+- React
+- Vite
+- Redux Toolkit
+- React Router DOM
+- Axios
+- CSS (глобальные стили + переменные)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## ⚙️ Установка и запуск
+
+### Установка зависимостей
+
+```bash
+npm install
+```
+
+### Запуск в режиме разработки
+
+```bash
+npm run dev
+```
+
+### Сборка проекта
+
+```bash
+npm run build
+```
+
+## 🗂️ Основные страницы
+
+- `/login` — Вход в систему
+- `/register` — Регистрация нового пользователя
+- `/files` — Список файлов пользователя
+- `/profile` - Личный кабинет
+- `/admin-users` - Кабинет для админа
+
+### Страница файлов
+
+- Карточки файлов с превью изображений
+- Действия: скачать, удалить, редактировать
+
+### Личный кабинет
+
+- Изменение никнейма и имени
+- Изменение пароля
+
+### Кабинет для админа
+
+- Управление хранилищами пользователей
+- Удаление пользоватетей
+- Назначение и снятие статуса "админ"
+
+## 🎨 Стилизация
+
+В проекте используется:
+
+- CSS-переменные для тем
+- Глобальные стили
+- Компонентные стили
+
+Основные файлы стилей:
+
+- `styles/globals.css`
+- `styles/reset.css`
+- `styles/layout.css`
+- `styles/variables.css`
+
+## 🏗️ Архитектура
+
+Проект разделён на:
+
+- **UI-компоненты**: Переиспользуемые компоненты интерфейса
+- **Страницы**: Компоненты страниц приложения
+- **API-слой**: Клиент для взаимодействия с backend
+- **Redux store**: Управление состоянием приложения
+- **Утилиты**: Вспомогательные функции
+
+👨‍💻 Автор
+
+Дмитрий Пасынков
+
+Проект выполнен в рамках дипломной работы по направлению
+Fullstack-разработка на Python
+
+---

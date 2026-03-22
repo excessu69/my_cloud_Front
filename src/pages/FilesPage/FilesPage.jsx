@@ -4,6 +4,10 @@ import { useSearchParams } from "react-router-dom";
 
 import api from "../../api/client";
 import Modal from "../../components/Modal/Modal";
+import DeleteModal from "../../components/Modals/DeleteModal/DeleteModal";
+import CopyLinkModal from "../../components/Modals/CopyLinkModal/CopyLinkModal";
+import ErrorModal from "../../components/Modals/ErrorModal/ErrorModal";
+import ImageModal from "../../components/Modals/ImageModal/ImageModal";
 import { setFiles as setFilesAction } from "../../store/filesSlice";
 import { getCookie } from "../../utils/cookies";
 import { formatSize } from "../../utils/formatSize";
@@ -35,13 +39,27 @@ export default function FilesPage() {
   });
 
   // Modal states
-  const [modalState, setModalState] = useState({
+  const [deleteModal, setDeleteModal] = useState({
     isOpen: false,
-    type: null, // 'delete', 'copy', 'error'
-    title: "",
-    message: "",
     onConfirm: null,
     fileId: null,
+  });
+
+  const [copyLinkModal, setCopyLinkModal] = useState({
+    isOpen: false,
+    link: "",
+  });
+
+  const [errorModal, setErrorModal] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+  });
+
+  const [imageModal, setImageModal] = useState({
+    isOpen: false,
+    url: "",
+    name: "",
   });
 
   const fetchFiles = async () => {
@@ -105,19 +123,15 @@ export default function FilesPage() {
   };
 
   const handleDelete = (id) => {
-    setModalState({
+    setDeleteModal({
       isOpen: true,
-      type: "delete",
-      title: "Удалить файл?",
-      message:
-        "Вы точно хотите удалить этот файл? Это действие нельзя отменить.",
       onConfirm: () => confirmDelete(id),
       fileId: id,
     });
   };
 
   const confirmDelete = async (id) => {
-    setModalState((prev) => ({ ...prev, isOpen: false }));
+    setDeleteModal((prev) => ({ ...prev, isOpen: false }));
 
     try {
       await api.get("/auth/csrf/");
@@ -132,12 +146,10 @@ export default function FilesPage() {
       await fetchFiles();
     } catch (err) {
       console.error(err);
-      setModalState({
+      setErrorModal({
         isOpen: true,
-        type: "error",
         title: "Ошибка",
         message: "Ошибка удаления файла",
-        onConfirm: () => setModalState((prev) => ({ ...prev, isOpen: false })),
       });
     }
   };
@@ -163,21 +175,16 @@ export default function FilesPage() {
 
       const fullLink = `http://127.0.0.1:8000${response.data.public_url}`;
       await navigator.clipboard.writeText(fullLink);
-      setModalState({
+      setCopyLinkModal({
         isOpen: true,
-        type: "success",
-        title: "Успешно",
-        message: `Ссылка скопирована в буфер обмена:\n${fullLink}`,
-        onConfirm: () => setModalState((prev) => ({ ...prev, isOpen: false })),
+        link: fullLink,
       });
     } catch (err) {
       console.error(err);
-      setModalState({
+      setErrorModal({
         isOpen: true,
-        type: "error",
         title: "Ошибка",
         message: "Ошибка получения публичной ссылки",
-        onConfirm: () => setModalState((prev) => ({ ...prev, isOpen: false })),
       });
     }
   };
@@ -225,37 +232,71 @@ export default function FilesPage() {
       await fetchFiles();
     } catch (err) {
       console.error(err);
-      setModalState({
+      setErrorModal({
         isOpen: true,
-        type: "error",
         title: "Ошибка",
         message: "Ошибка обновления файла",
-        onConfirm: () => setModalState((prev) => ({ ...prev, isOpen: false })),
       });
     }
   };
 
+  const openImageModal = (url, name) => {
+    setImageModal({
+      isOpen: true,
+      url,
+      name,
+    });
+  };
+
+  const closeImageModal = () => {
+    setImageModal({
+      isOpen: false,
+      url: "",
+      name: "",
+    });
+  };
+
+  const isImageFile = (file) => {
+    if (file.mime_type) {
+      return file.mime_type.startsWith("image/");
+    }
+    const ext = file.original_name.split(".").pop().toLowerCase();
+    return ["jpg", "jpeg", "png", "gif", "bmp", "webp"].includes(ext);
+  };
+
+  const getFileUrl = (id) => {
+    return `http://127.0.0.1:8000/api/files/${id}/download/`;
+  };
+
   return (
     <>
-      <Modal
-        isOpen={modalState.isOpen}
-        title={modalState.title}
-        message={modalState.message}
-        onConfirm={modalState.onConfirm || (() => {})}
-        onCancel={() => setModalState((prev) => ({ ...prev, isOpen: false }))}
-        confirmText={modalState.type === "delete" ? "Удалить" : "OK"}
-        cancelText={
-          modalState.type === "error" || modalState.type === "success"
-            ? ""
-            : "Отмена"
-        }
-        isDanger={modalState.type === "delete"}
-        showCancelButton={
-          modalState.type !== "error" && modalState.type !== "success"
-        }
+      <DeleteModal
+        isOpen={deleteModal.isOpen}
+        onConfirm={deleteModal.onConfirm}
+        onCancel={() => setDeleteModal((prev) => ({ ...prev, isOpen: false }))}
       />
 
-      <div className="page-card files-page">
+      <CopyLinkModal
+        isOpen={copyLinkModal.isOpen}
+        link={copyLinkModal.link}
+        onClose={() => setCopyLinkModal((prev) => ({ ...prev, isOpen: false }))}
+      />
+
+      <ErrorModal
+        isOpen={errorModal.isOpen}
+        title={errorModal.title}
+        message={errorModal.message}
+        onClose={() => setErrorModal((prev) => ({ ...prev, isOpen: false }))}
+      />
+
+      <ImageModal
+        isOpen={imageModal.isOpen}
+        url={imageModal.url}
+        name={imageModal.name}
+        onClose={closeImageModal}
+      />
+
+      <div className="files-page">
         <h1 className="page-title">
           {isAdminViewingOtherUser
             ? `Файлы пользователя #${targetUserId}`
@@ -327,6 +368,21 @@ export default function FilesPage() {
                   </div>
                 ) : (
                   <div>
+                    {isImageFile(file) && (
+                      <div className="file-preview-container">
+                        <img
+                          src={getFileUrl(file.id)}
+                          alt={file.original_name}
+                          className="file-preview"
+                          onClick={() =>
+                            openImageModal(
+                              getFileUrl(file.id),
+                              file.original_name,
+                            )
+                          }
+                        />
+                      </div>
+                    )}
                     <div>
                       <strong>{file.original_name}</strong> —{" "}
                       {formatSize(file.size)}
@@ -355,7 +411,7 @@ export default function FilesPage() {
                       </button>
 
                       <button onClick={() => handlePublicLink(file.id)}>
-                        Публичная ссылка
+                        Ссылка
                       </button>
 
                       <button onClick={() => startEdit(file)}>

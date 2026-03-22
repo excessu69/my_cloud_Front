@@ -1,23 +1,59 @@
 :root {
-  --color-bg: #f5f7fb;
+  --color-bg: #fafbfc;
   --color-surface: #ffffff;
-  --color-text: #1f2937;
-  --color-muted: #6b7280;
-  --color-primary: #2563eb;
-  --color-primary-hover: #1d4ed8;
-  --color-danger: #dc2626;
-  --color-danger-hover: #b91c1c;
-  --color-border: #d1d5db;
+  --color-surface-secondary: #f8fafc;
+  --color-text: #2d3748;
+  --color-text-secondary: #718096;
+  --color-text-muted: #a0aec0;
+  --color-primary: #4a5568;
+  --color-primary-hover: #2d3748;
+  --color-primary-light: #e2e8f0;
+  --color-accent: #63b3ed;
+  --color-accent-hover: #4299e1;
+  --color-success: #48bb78;
+  --color-success-light: #c6f6d5;
+  --color-danger: #f56565;
+  --color-danger-hover: #e53e3e;
+  --color-danger-light: #fed7d7;
+  --color-warning: #ed8936;
+  --color-warning-light: #fef5e7;
+  --color-border: #e2e8f0;
+  --color-border-hover: #cbd5e0;
 
-  --radius: 10px;
+  --radius-sm: 6px;
+  --radius: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
 
   --space-xs: 4px;
   --space-sm: 8px;
   --space-md: 16px;
   --space-lg: 24px;
   --space-xl: 32px;
+  --space-2xl: 48px;
 
-  --container-width: 1100px;
+  --container-width: 1200px;
 
-  --shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.15);
+
+  --font-family:
+    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.625;
+
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.2s ease;
+  --transition-slow: 0.3s ease;
 }

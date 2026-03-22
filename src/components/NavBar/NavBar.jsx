@@ -43,7 +43,7 @@ export default function NavBar() {
 
         {user && <Link to="/files">Мои файлы</Link>}
 
-        {user && <Link to="/profile">Профиль</Link>}
+        {user && <Link to="/profile">Личный кабинет</Link>}
 
         <div className="navbar__spacer"></div>
 

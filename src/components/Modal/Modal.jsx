@@ -4,44 +4,64 @@ export default function Modal({
   isOpen,
   title,
   message,
+  children,
   onConfirm,
   onCancel,
   confirmText = "OK",
   cancelText = "Отмена",
   isDanger = false,
   showCancelButton = true,
+  isLarge = false,
+  isImage = false,
 }) {
   if (!isOpen) return null;
 
+  const shouldShowFooter = showCancelButton || !!onConfirm;
+
   return (
     <div className="modal-overlay" onClick={onCancel}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <h2 className="modal-title">{title}</h2>
+      <div
+        className={`modal-content ${isLarge ? "modal-content--large" : ""}`}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        {title && (
+          <div className="modal-header">
+            <h2 className="modal-title">{title}</h2>
+          </div>
+        )}
+
+        {/* Body */}
+        <div className={`modal-body ${isImage ? "modal-body--image" : ""}`}>
+          {children ? children : message && <p>{message}</p>}
         </div>
 
-        <div className="modal-body">
-          <p>{message}</p>
-        </div>
+        {/* Footer */}
+        {shouldShowFooter && (
+          <div className="modal-footer">
+            {showCancelButton && (
+              <button
+                type="button"
+                className="button button--secondary"
+                onClick={onCancel}
+              >
+                {cancelText}
+              </button>
+            )}
 
-        <div className="modal-footer">
-          {showCancelButton && (
-            <button
-              className="modal-btn modal-btn-secondary"
-              onClick={onCancel}
-            >
-              {cancelText}
-            </button>
-          )}
-          <button
-            className={`modal-btn ${
-              isDanger ? "modal-btn-danger" : "modal-btn-primary"
-            }`}
-            onClick={onConfirm}
-          >
-            {confirmText}
-          </button>
-        </div>
+            {onConfirm && (
+              <button
+                type="button"
+                className={`button ${
+                  isDanger ? "button--danger" : "button--primary"
+                }`}
+                onClick={onConfirm}
+              >
+                {confirmText}
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
