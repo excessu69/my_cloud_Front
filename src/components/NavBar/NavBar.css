@@ -1,0 +1,24 @@
+.navbar {
+  margin-bottom: 20px;
+}
+
+.navbar__content {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+}
+
+.navbar__spacer {
+  flex: 1;
+}
+
+.navbar__right {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+}
+
+.navbar__user {
+  color: var(--color-muted);
+  margin-right: 8px;
+}

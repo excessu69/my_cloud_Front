@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  files: [],
+  items: [],
 };
 
 const filesSlice = createSlice({
@@ -9,10 +9,10 @@ const filesSlice = createSlice({
   initialState,
   reducers: {
     setFiles(state, action) {
-      state.files = action.payload;
+      state.items = action.payload;
     },
     clearFiles(state) {
-      state.files = [];
+      state.items = [];
     },
   },
 });

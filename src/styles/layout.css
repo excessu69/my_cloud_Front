@@ -1,0 +1,37 @@
+.app-container {
+  max-width: var(--container-width);
+  margin: 0 auto;
+  padding: var(--space-xl);
+}
+
+.page-card {
+  background: var(--color-surface);
+  border-radius: var(--radius);
+  padding: var(--space-xl);
+  box-shadow: var(--shadow);
+}
+
+.page-title {
+  margin-bottom: var(--space-lg);
+}
+
+.form-group {
+  margin-bottom: var(--space-md);
+}
+
+.actions-row {
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+  margin-top: var(--space-sm);
+}
+
+.message-error {
+  color: var(--color-danger);
+  margin-top: var(--space-sm);
+}
+
+.message-success {
+  color: #15803d;
+  margin-top: var(--space-sm);
+}

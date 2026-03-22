@@ -1,15 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../api/client";
-
-function getCookie(name) {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) {
-    return parts.pop().split(";").shift();
-  }
-  return null;
-}
+import api from "../../api/client";
+import { getCookie } from "../../utils/cookies";
+import "./RegisterPage.css";
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -60,11 +53,11 @@ export default function RegisterPage() {
   };
 
   return (
-    <div>
-      <h1>Регистрация</h1>
+    <div className="page-card register-page">
+      <h1 className="page-title">Регистрация</h1>
 
       <form onSubmit={handleSubmit}>
-        <div>
+        <div className="form-group">
           <input
             type="text"
             name="username"
@@ -74,7 +67,7 @@ export default function RegisterPage() {
           />
         </div>
 
-        <div>
+        <div className="form-group">
           <input
             type="email"
             name="email"
@@ -84,7 +77,7 @@ export default function RegisterPage() {
           />
         </div>
 
-        <div>
+        <div className="form-group">
           <input
             type="text"
             name="full_name"
@@ -94,7 +87,7 @@ export default function RegisterPage() {
           />
         </div>
 
-        <div>
+        <div className="form-group">
           <input
             type="password"
             name="password"
@@ -104,11 +97,13 @@ export default function RegisterPage() {
           />
         </div>
 
-        <button type="submit">Зарегистрироваться</button>
+        <button className="register-page__button" type="submit">
+          Зарегистрироваться
+        </button>
       </form>
 
-      {success && <p>{success}</p>}
-      {error && <p>{error}</p>}
+      {success && <p className="message-success">{success}</p>}
+      {error && <p className="message-error">{error}</p>}
     </div>
   );
 }

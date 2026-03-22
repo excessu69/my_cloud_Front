@@ -1,15 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../api/client";
-
-function getCookie(name) {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) {
-    return parts.pop().split(";").shift();
-  }
-  return null;
-}
+import api from "../../api/client";
+import { getCookie } from "../../utils/cookies";
+import "./AdminUsersPage.css";
 
 export default function AdminUsersPage() {
   const [users, setUsers] = useState([]);
@@ -84,21 +77,17 @@ export default function AdminUsersPage() {
   };
 
   return (
-    <div>
-      <h1>Пользователи</h1>
+    <div className="page-card admin-users-page">
+      <h1 className="page-title">Пользователи</h1>
 
       {loading ? (
         <p>Загрузка пользователей...</p>
       ) : error ? (
-        <p>{error}</p>
+        <p className="message-error">{error}</p>
       ) : users.length === 0 ? (
         <p>Пользователей нет</p>
       ) : (
-        <table
-          border="1"
-          cellPadding="8"
-          style={{ borderCollapse: "collapse" }}
-        >
+        <table>
           <thead>
             <tr>
               <th>ID</th>
@@ -112,33 +101,29 @@ export default function AdminUsersPage() {
             </tr>
           </thead>
           <tbody>
-            {users.map((user) => (
-              <tr key={user.id}>
-                <td>{user.id}</td>
-                <td>{user.username}</td>
-                <td>{user.email}</td>
-                <td>{user.full_name}</td>
-                <td>{user.is_staff ? "Да" : "Нет"}</td>
-                <td>{user.files_count}</td>
-                <td>{user.files_total_size}</td>
-                <td>
-                  <button onClick={() => handleOpenFiles(user.id)}>
-                    Открыть файлы
-                  </button>
+            {users.map((userItem) => (
+              <tr key={userItem.id}>
+                <td>{userItem.id}</td>
+                <td>{userItem.username}</td>
+                <td>{userItem.email}</td>
+                <td>{userItem.full_name}</td>
+                <td>{userItem.is_staff ? "Да" : "Нет"}</td>
+                <td>{userItem.files_count}</td>
+                <td>{userItem.files_total_size}</td>
+                <td className="admin-users-page__actions">
+                  <div className="actions-row">
+                    <button onClick={() => handleOpenFiles(userItem.id)}>
+                      Открыть файлы
+                    </button>
 
-                  <button
-                    onClick={() => handleToggleAdmin(user)}
-                    style={{ marginLeft: "8px" }}
-                  >
-                    {user.is_staff ? "Снять админа" : "Сделать админом"}
-                  </button>
+                    <button onClick={() => handleToggleAdmin(userItem)}>
+                      {userItem.is_staff ? "Снять админа" : "Сделать админом"}
+                    </button>
 
-                  <button
-                    onClick={() => handleDelete(user.id)}
-                    style={{ marginLeft: "8px" }}
-                  >
-                    Удалить
-                  </button>
+                    <button onClick={() => handleDelete(userItem.id)}>
+                      Удалить
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}

@@ -1,30 +1,29 @@
 import { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import api from "./api/client";
-import NavBar from "./components/NavBar";
-import HomePage from "./pages/HomePage";
-import LoginPage from "./pages/LoginPage";
-import RegisterPage from "./pages/RegisterPage";
-import FilesPage from "./pages/FilesPage";
-import AdminUsersPage from "./pages/AdminUsersPage";
-import { setUser as setUserAction } from "./store/userSlice";
+import NavBar from "./components/NavBar/NavBar";
+import HomePage from "./pages/HomePage/HomePage";
+import LoginPage from "./pages/LoginPage/LoginPage";
+import RegisterPage from "./pages/RegisterPage/RegisterPage";
+import FilesPage from "./pages/FilesPage/FilesPage";
+import AdminUsersPage from "./pages/AdminUsersPage/AdminUsersPage";
+import ProfilePage from "./pages/ProfilePage/ProfilePage";
+import { setUser, clearUser } from "./store/userSlice";
 
 function App() {
-  const [user, setUser] = useState(null);
-  const [authLoading, setAuthLoading] = useState(true);
   const dispatch = useDispatch();
+  const user = useSelector((state) => state.user.user);
+  const [authLoading, setAuthLoading] = useState(true);
 
   useEffect(() => {
     const fetchCurrentUser = async () => {
       try {
         const response = await api.get("/auth/me/");
-        setUser(response.data);
-        dispatch(setUserAction(response.data));
+        dispatch(setUser(response.data));
       } catch (err) {
-        setUser(null);
-        dispatch(setUserAction(null));
+        dispatch(clearUser());
       } finally {
         setAuthLoading(false);
       }
@@ -34,13 +33,13 @@ function App() {
   }, [dispatch]);
 
   if (authLoading) {
-    return <p>Проверка авторизации...</p>;
+    return <p className="app-container">Проверка авторизации...</p>;
   }
 
   return (
     <BrowserRouter>
-      <div style={{ padding: "20px" }}>
-        <NavBar user={user} setUser={setUser} />
+      <div className="app-container">
+        <NavBar />
 
         <Routes>
           <Route path="/" element={<HomePage />} />
@@ -51,7 +50,7 @@ function App() {
               user ? (
                 <Navigate to={user.is_staff ? "/admin-users" : "/files"} />
               ) : (
-                <LoginPage setUser={setUser} />
+                <LoginPage />
               )
             }
           />
@@ -69,9 +68,7 @@ function App() {
 
           <Route
             path="/files"
-            element={
-              user ? <FilesPage user={user} /> : <Navigate to="/login" />
-            }
+            element={user ? <FilesPage /> : <Navigate to="/login" />}
           />
 
           <Route
@@ -83,6 +80,11 @@ function App() {
                 <Navigate to="/files" />
               )
             }
+          />
+
+          <Route
+            path="/profile"
+            element={user ? <ProfilePage /> : <Navigate to="/login" />}
           />
         </Routes>
       </div>

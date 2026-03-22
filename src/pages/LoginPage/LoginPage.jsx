@@ -1,18 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../api/client";
+import { useDispatch } from "react-redux";
 
-function getCookie(name) {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) {
-    return parts.pop().split(";").shift();
-  }
-  return null;
-}
+import api from "../../api/client";
+import { getCookie } from "../../utils/cookies";
+import { setUser } from "../../store/userSlice";
+import "./LoginPage.css";
 
-export default function LoginPage({ setUser }) {
+export default function LoginPage() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [form, setForm] = useState({
     username: "",
@@ -33,17 +30,23 @@ export default function LoginPage({ setUser }) {
     setError("");
 
     try {
+      console.log("Получение CSRF токена...");
       await api.get("/auth/csrf/");
       const csrfToken = getCookie("csrftoken");
+      console.log("CSRF токен:", csrfToken);
 
+      console.log("Отправка данных входа...");
       await api.post("/auth/login/", form, {
         headers: {
           "X-CSRFToken": csrfToken,
         },
       });
+      console.log("Вход успешен");
 
+      console.log("Получение данных пользователя...");
       const response = await api.get("/auth/me/");
-      setUser(response.data);
+      console.log("Данные пользователя:", response.data);
+      dispatch(setUser(response.data));
 
       if (response.data.is_staff) {
         navigate("/admin-users");
@@ -51,17 +54,17 @@ export default function LoginPage({ setUser }) {
         navigate("/files");
       }
     } catch (err) {
+      console.error("Ошибка входа:", err);
       setError("Ошибка входа. Проверь логин и пароль.");
-      console.error(err);
     }
   };
 
   return (
-    <div>
-      <h1>Вход</h1>
+    <div className="page-card login-page">
+      <h1 className="page-title">Вход</h1>
 
       <form onSubmit={handleSubmit}>
-        <div>
+        <div className="form-group">
           <input
             type="text"
             name="username"
@@ -71,7 +74,7 @@ export default function LoginPage({ setUser }) {
           />
         </div>
 
-        <div style={{ marginTop: "8px" }}>
+        <div className="form-group">
           <input
             type="password"
             name="password"
@@ -81,12 +84,12 @@ export default function LoginPage({ setUser }) {
           />
         </div>
 
-        <div style={{ marginTop: "8px" }}>
-          <button type="submit">Войти</button>
-        </div>
+        <button className="login-page__button" type="submit">
+          Войти
+        </button>
       </form>
 
-      {error && <p>{error}</p>}
+      {error && <p className="message-error">{error}</p>}
     </div>
   );
 }

@@ -1,0 +1,7 @@
+.register-page {
+  max-width: 500px;
+}
+
+.register-page__button {
+  width: fit-content;
+}
